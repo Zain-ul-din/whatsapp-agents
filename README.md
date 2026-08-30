@@ -1,6 +1,8 @@
 <div align="center">
 
-# <img src="https://github.com/Zain-ul-din/whatsapp-ai-bot/assets/78583049/d31339cf-b4ae-450e-95b9-53d21e4641a0" width="35" height="35"/> WhatsApp AI Bot 🚀
+# Renaming this to WhatsApp AI Agent (Coming Soon...)
+
+## <img src="https://github.com/Zain-ul-din/whatsapp-ai-bot/assets/78583049/d31339cf-b4ae-450e-95b9-53d21e4641a0" width="35" height="35"/> WhatsApp AI Bot 🚀
 
 </div>
 
