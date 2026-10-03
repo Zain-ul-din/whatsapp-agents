@@ -5,7 +5,7 @@
 </div>
 
 ```diff
-- This repository under development, contribute to help write better docs.
+- Disclaimer: This project is under active development. Features and documentation may change; contributions to improve the docs are welcome.
 ```
 
 The WhatsApp AI Agents is a chatbot that uses AI models APIs to generate responses to user input. The bot supports several AI models, including **`Gemini`**, **`ChatGPT`**, **`Ollama`**, **`DALL-E`**, **`Flux`**, and **`Stability AI`**.
