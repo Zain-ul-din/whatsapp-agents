@@ -6,7 +6,7 @@ import { systemInstructions } from './system-instructions';
 export async function runAgent(prompt: string) {
   const res = streamText({
     model: openai('gpt-6-sol'),
-    prompt: prompt,
+    messages: [{ role: 'user', content: prompt }],
     providerOptions: {
       openai: {
         store: false,
