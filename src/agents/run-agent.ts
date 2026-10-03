@@ -1,6 +1,7 @@
 import { stepCountIs, streamText } from 'ai';
 import { openai } from './providers/openai-subscription';
 import { tools } from './tools/tools';
+import { systemInstructions } from './system-instructions';
 
 export async function runAgent(prompt: string) {
   const res = streamText({
@@ -9,7 +10,7 @@ export async function runAgent(prompt: string) {
     providerOptions: {
       openai: {
         store: false,
-        instructions: 'You are a WhatsApp helpful assistant.'
+        instructions: systemInstructions()
       }
     },
     tools: tools,

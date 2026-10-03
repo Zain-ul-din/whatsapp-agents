@@ -27,3 +27,4 @@ yarn.lock
 
 /stores/*.db
 
+/agents
