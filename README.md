@@ -1,12 +1,14 @@
 <div align="center">
 
-# Renaming this to WhatsApp AI Agent (Coming Soon...)
-
-## <img src="https://github.com/Zain-ul-din/whatsapp-ai-bot/assets/78583049/d31339cf-b4ae-450e-95b9-53d21e4641a0" width="35" height="35"/> WhatsApp AI Bot 🚀
+## <img src="https://github.com/Zain-ul-din/whatsapp-ai-bot/assets/78583049/d31339cf-b4ae-450e-95b9-53d21e4641a0" width="35" height="35"/> WhatsApp AI Agents 🚀
 
 </div>
 
-The WhatsApp AI Bot is a chatbot that uses AI models APIs to generate responses to user input. The bot supports several AI models, including **`Gemini`**, **`ChatGPT`**, **`Ollama`**, **`DALL-E`**, **`Flux`**, and **`Stability AI`**.
+```diff
+- This repository under development, contribute to help write better docs.
+```
+
+The WhatsApp AI Agents is a chatbot that uses AI models APIs to generate responses to user input. The bot supports several AI models, including **`Gemini`**, **`ChatGPT`**, **`Ollama`**, **`DALL-E`**, **`Flux`**, and **`Stability AI`**.
 
 # Table of Content
 
@@ -19,7 +21,7 @@ The WhatsApp AI Bot is a chatbot that uses AI models APIs to generate responses 
 - [Sponsors](#Sponsors)
 - [About](#about-us)
 
-# Supported Models
+## Supported Models
 
 | Model         | Provider                                                                                          | Type          | Command    |
 | ------------- | ------------------------------------------------------------------------------------------------- | ------------- | ---------- |
@@ -32,34 +34,23 @@ The WhatsApp AI Bot is a chatbot that uses AI models APIs to generate responses 
 | Ollama        | [Open Source](https://ollama.com/)                                                                | Text to Text  | !ollama    |
 | Custom        | Base Provider                                                                                     | Text to Text  | !wa        |
 
-# Demo
+## Demo
 
 ### Gemini
 
-
-
 [![Screenshot (1186)](https://github.com/Zain-ul-din/whatsapp-ai-bot/assets/78583049/b6f256de-c792-4947-bf65-401a60a0b1f4)](https://www.youtube.com/watch?v=dXDxTQQqeq8)
-
 
 ### Stability AI + Chat-GPT
 
-
-
 ![image](https://user-images.githubusercontent.com/78583049/222071673-ef0f2021-a8b4-4263-9304-a77ecd76c0a1.png)
-
-
 
 ### Dalle + Custom Model
 
-
-
 ![image](https://user-images.githubusercontent.com/78583049/222074174-55792d13-5137-4c1c-b708-3ad188ca8d8d.png)
-
-
 
 ---
 
-# Usage
+## Usage
 
 ### 1. Download Source Code
 
@@ -89,7 +80,7 @@ Copy the file `.env.example` and rename it to `.env`, then set any settings you 
 
 - Scan QR code.
 
-# Default Settings
+## Default Settings
 
 - `!gemini` use gemini.
 - `!chatgpt` use chat-gpt.
@@ -101,7 +92,7 @@ Copy the file `.env.example` and rename it to `.env`, then set any settings you 
 
 [Docs Link](docs/config-docs.md)
 
-# Tutorials
+## Tutorials
 
 - **[Setup bot on cloud using Github code-spaces](https://www.youtube.com/watch?v=QahJSi6Ygj4)**
 - **[setup bot on a local machine](https://www.youtube.com/watch?v=fyPD3ILFPck)**
@@ -110,7 +101,7 @@ Copy the file `.env.example` and rename it to `.env`, then set any settings you 
 
 - [How to create custom model](https://github.com/Zain-ul-din/whatsapp-ai-bot/issues/3)
 
-# Disclaimer
+## Disclaimer
 
 This bot utilizes [baileys](https://github.com/WhiskeySockets/Baileys) to operate an actual instance of Whatsapp Web to prevent blocking. However, it is essential to note that these operations come at a cost charged by OpenAI and Stability AI for every request made. Please be aware that WhatsApp does not support bots or unofficial clients on its platform, so using this method is not entirely secure and could lead to getting blocked.
 
@@ -137,8 +128,8 @@ A big thank you to these people for supporting this project.
 
 # Useful links
 
-| ♥ Sponsor                                  | 💎 Bounty                                       | 🚀 Deployment                           | ✉ WhatsApp Group                                         |
-| ------------------------------------------ | ----------------------------------------------- | --------------------------------------- | -------------------------------------------------------- |
+| ♥ Sponsor                                  | 💎 Bounty                                       | 🚀 Deployment                           | ✉ WhatsApp Group                  |
+| ------------------------------------------ | ----------------------------------------------- | --------------------------------------- | --------------------------------- |
 | [Link](https://buymeacoffee.com/zainuldin) | [Link](https://wa-ai-seven.vercel.app/feat-req) | [Link](https://wa-ai-seven.vercel.app/) | [Link](https://chat.whatsapp.com) |
 
 <a href="https://auraplusplus.com/projects/whatsapp-ai-bot" target="_blank" rel="noopener">
