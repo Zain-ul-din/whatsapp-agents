@@ -1,5 +1,6 @@
 import { streamText } from 'ai';
 import { openai } from './providers/openai-subscription';
+import { tools } from './tools/tools';
 
 export async function runAgent(prompt: string) {
   const res = streamText({
@@ -10,7 +11,8 @@ export async function runAgent(prompt: string) {
         store: false,
         instructions: 'You are a WhatsApp helpful assistant.'
       }
-    }
+    },
+    tools: tools
   });
 
   let text = '';
