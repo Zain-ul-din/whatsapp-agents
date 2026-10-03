@@ -24,3 +24,6 @@ package-lock.json
 yarn.lock
 
 .vscode
+
+/stores/*.db
+

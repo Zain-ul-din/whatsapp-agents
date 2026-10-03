@@ -12,6 +12,7 @@
     "build": "npx yarn"
   },
   "devDependencies": {
+    "@types/better-sqlite3": "^9.6.0",
     "@types/invariant": "^2.2.37",
     "@types/node": "^18.14.0",
     "@types/node-fetch": "^2.6.2",
@@ -23,10 +24,12 @@
     "@ai-sdk/openai": "^4.0.83",
     "@google/generative-ai": "^0.17.1",
     "@hapi/boom": "^10.0.1",
+    "@toon-format/toon": "^4.1.1",
     "@types/qrcode-terminal": "^0.12.0",
     "@whiskeysockets/baileys": "7.0.0-rc14",
     "ai": "^7.0.127",
     "axios": "^1.7.9",
+    "better-sqlite3": "^13.0.3",
     "dotenv": "^16.0.3",
     "form-data": "^4.0.1",
     "invariant": "^2.2.4",

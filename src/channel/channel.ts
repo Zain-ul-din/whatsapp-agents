@@ -1,18 +1,13 @@
-export type ChannelMessage = {
-  senderId: string;
-  content: string;
-};
-
-export type ChannelRespondPayload = {
-  recipientId: string;
-  content: string;
-};
+import { ChannelMessage } from './types/channel-message';
+import { ChannelName } from './types/channel-name';
+import { ChannelRespondPayload } from './types/channel-respond-payload';
 
 export abstract class Channel<
   Options extends {} = {},
   Events extends { [K in keyof Events]: unknown[] } = {}
 > {
   protected options: Options;
+  abstract readonly channelName: ChannelName;
 
   constructor(options: Options) {
     this.options = options;
@@ -25,4 +20,8 @@ export abstract class Channel<
 
   // TODO: send channel metadata along side it
   abstract respond(payload: ChannelRespondPayload): Promise<this>;
+
+  abstract getMessages(senderId: string): (ChannelMessage & {
+    role: 'user' | 'assistant';
+  })[];
 }

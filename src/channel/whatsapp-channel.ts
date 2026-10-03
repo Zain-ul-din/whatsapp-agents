@@ -2,11 +2,16 @@ import {
   makeWASocket,
   AuthenticationState,
   BaileysEventMap,
-  DisconnectReason
+  DisconnectReason,
+  WAMessage
 } from '@whiskeysockets/baileys';
 import { Boom } from '@hapi/boom';
-import { Channel, ChannelMessage, ChannelRespondPayload } from './channel';
+import { Channel } from './channel';
 import { EventEmitter } from 'node:events';
+import { ChannelMessage } from './types/channel-message';
+import { ChannelName } from './types/channel-name';
+import { ChannelRespondPayload } from './types/channel-respond-payload';
+import { claimMessage, loadMessages, usePersistMessages } from './persistence/baileys-store';
 
 type WhatsAppChannelOptions = {
   auth: AuthenticationState;
@@ -27,6 +32,10 @@ export class WhatsAppChannel extends Channel<WhatsAppChannelOptions, EventMap> {
   private ev: EventEmitter<CustomEventMap>;
   private socketListeners: Array<(socket: ReturnType<typeof makeWASocket>) => void> = [];
   private connected = false;
+
+  private readonly ignoreJIDs = ['@g.us', '@broadcast', '@newsletter'];
+
+  channelName: ChannelName = 'WhatsAppBaileys';
 
   private static readonly customEvents: readonly CustomEventKeys[] = [
     'connection.qrcode',
@@ -60,28 +69,62 @@ export class WhatsAppChannel extends Channel<WhatsAppChannelOptions, EventMap> {
   }
 
   override onMessage(callback: (msg: ChannelMessage) => void): this {
-    const ignoreJIDs = ['@g.us', '@broadcast', '@newsletter'];
+    const deliver = (m: WAMessage) => {
+      if (m.key.fromMe) return;
+      const text = m.message?.conversation ?? m.message?.extendedTextMessage?.text;
+      if (!text || !m.key.remoteJid || !m.key.id) return;
+      if (this.ignoreJIDs.some((id) => m.key.remoteJid?.endsWith(id))) return;
+      if (!claimMessage(m)) return;
+      callback({
+        id: m.key.id,
+        content: text,
+        senderId: m.key.remoteJid,
+        channel: 'WhatsAppBaileys',
+        waMsg: m
+      });
+    };
     this.on('messages.upsert', (event) => {
-      if (event.type !== 'notify') return;
-
-      for (const m of event.messages) {
-        if (m.key.fromMe) continue;
-        const text = m.message?.conversation ?? m.message?.extendedTextMessage?.text;
-        if (!text || !m.key.remoteJid) continue;
-        if (ignoreJIDs.find((id) => m.key.remoteJid?.endsWith(id))) continue;
-
-        callback({
-          content: text,
-          senderId: m.key.remoteJid
-        });
-      }
+      for (const m of event.messages) deliver(m);
+    });
+    this.on('messaging-history.set', (event) => {
+      for (const m of event.messages) deliver(m);
     });
     return this;
   }
 
   override async respond(payload: ChannelRespondPayload) {
-    await this.socket.sendMessage(payload.recipientId, { text: payload.content });
+    await this.socket.sendMessage(
+      payload.recipientId,
+      { text: payload.content },
+      {
+        quoted: payload.baileysMsg as WAMessage
+      }
+    );
     return this;
+  }
+
+  override getMessages(senderId: string) {
+    const dbMessages = loadMessages(senderId, 100);
+    const channelMessages: (ChannelMessage & {
+      role: 'user' | 'assistant';
+    })[] = [];
+
+    for (const m of dbMessages) {
+      if (!m.data.message) continue;
+      const text = m.data.message.conversation ?? m.data.message.extendedTextMessage?.text;
+      if (this.ignoreJIDs.find((id) => m.jid.endsWith(id))) continue;
+      if (!text) continue;
+
+      channelMessages.push({
+        id: m.id,
+        senderId: m.jid,
+        channel: 'WhatsAppBaileys',
+        content: text,
+        role: m.data.key?.fromMe ? 'assistant' : 'user'
+      });
+    }
+
+    return channelMessages;
   }
 
   async connect(): Promise<this> {
@@ -99,7 +142,9 @@ export class WhatsAppChannel extends Channel<WhatsAppChannelOptions, EventMap> {
   }
 
   makeSocket(): ReturnType<typeof makeWASocket> {
-    return makeWASocket({ auth: this.options.auth, syncFullHistory: false });
+    const socket = makeWASocket({ auth: this.options.auth, syncFullHistory: true });
+    usePersistMessages(socket);
+    return socket;
   }
 
   private attachConnectionListeners(

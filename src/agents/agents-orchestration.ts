@@ -1,17 +1,21 @@
-import { generateText, streamText } from 'ai';
+import { streamText } from 'ai';
 
 import { Channel } from '../channel/channel';
 import { openai } from './providers/openai-subscription';
+import { encode } from '@toon-format/toon';
 
 export function agentsOrchestration(channel: Channel) {
   channel.onMessage(async (message) => {
+    const previousMessages = [...channel.getMessages(message.senderId), message];
+    console.log(JSON.stringify(previousMessages, null, 2));
+
     const res = streamText({
       model: openai('gpt-6-sol'),
-      prompt: message.content,
+      prompt: encode(previousMessages),
       providerOptions: {
         openai: {
           store: false,
-          instructions: 'You are a helpful assistant.'
+          instructions: 'You are a WhatsApp helpful assistant.'
         }
       }
     });
@@ -19,9 +23,12 @@ export function agentsOrchestration(channel: Channel) {
     let text = '';
     for await (const chunk of res.textStream) text += chunk;
 
-    await channel.respond({
-      recipientId: message.senderId,
-      content: text
-    });
+    if (message.channel == 'WhatsAppBaileys') {
+      await channel.respond({
+        recipientId: message.senderId,
+        content: text,
+        baileysMsg: message.waMsg
+      });
+    }
   });
 }
