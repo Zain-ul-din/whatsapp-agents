@@ -1,5 +1,4 @@
 import { Channel } from '../channel/channel';
-import { encode } from '@toon-format/toon';
 import { runAgent } from './run-agent';
 import { MessagingQueue } from './messaging-queue';
 
@@ -13,7 +12,14 @@ export function agentsOrchestration(channel: Channel) {
     if (messages.length > 0 && messages.at(-1)?.id !== message.id)
       messages.push({ ...message, role: 'user' });
 
-    const response = await runAgent(encode(messages));
+    const response = await runAgent(
+      messages.map((msg) => {
+        return {
+          role: msg.role,
+          content: msg.content
+        };
+      })
+    );
 
     if (message.channel == 'WhatsAppBaileys') {
       await channel.respond({

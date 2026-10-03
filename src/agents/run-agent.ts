@@ -1,12 +1,12 @@
-import { stepCountIs, streamText } from 'ai';
+import { ModelMessage, stepCountIs, streamText } from 'ai';
 import { openai } from './providers/openai-subscription';
 import { tools } from './tools/tools';
 import { systemInstructions } from './system-instructions';
 
-export async function runAgent(prompt: string) {
+export async function runAgent(messages: ModelMessage[]) {
   const res = streamText({
     model: openai('gpt-6-sol'),
-    messages: [{ role: 'user', content: prompt }],
+    messages: messages,
     providerOptions: {
       openai: {
         store: false,
