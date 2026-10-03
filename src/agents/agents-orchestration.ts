@@ -5,7 +5,6 @@ import { openai } from './providers/openai-subscription';
 
 export function agentsOrchestration(channel: Channel) {
   channel.onMessage(async (message) => {
-    console.log('got new message: ', message);
     const res = streamText({
       model: openai('gpt-6-sol'),
       prompt: message.content,
