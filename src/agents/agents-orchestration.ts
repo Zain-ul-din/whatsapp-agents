@@ -1,34 +1,34 @@
-import { streamText } from 'ai';
-
 import { Channel } from '../channel/channel';
-import { openai } from './providers/openai-subscription';
 import { encode } from '@toon-format/toon';
+import { runAgent } from './run-agent';
+import { MessagingQueue } from './messaging-queue';
 
 export function agentsOrchestration(channel: Channel) {
-  channel.onMessage(async (message) => {
-    const previousMessages = [...channel.getMessages(message.senderId), message];
-    console.log(JSON.stringify(previousMessages, null, 2));
+  const queue = new MessagingQueue();
 
-    const res = streamText({
-      model: openai('gpt-6-sol'),
-      prompt: encode(previousMessages),
-      providerOptions: {
-        openai: {
-          store: false,
-          instructions: 'You are a WhatsApp helpful assistant.'
-        }
-      }
-    });
+  const processMessage = async () => {
+    const message = queue.peek();
 
-    let text = '';
-    for await (const chunk of res.textStream) text += chunk;
+    const messages = [...channel.getMessages(message.senderId)];
+    if (messages.length > 0 && messages.at(-1)?.id !== message.id)
+      messages.push({ ...message, role: 'user' });
+
+    const response = await runAgent(encode(messages));
 
     if (message.channel == 'WhatsAppBaileys') {
       await channel.respond({
         recipientId: message.senderId,
-        content: text,
+        content: response,
         baileysMsg: message.waMsg
       });
     }
+
+    queue.dequeue();
+    if (!queue.isEmpty()) await processMessage();
+  };
+
+  channel.onMessage(async (message) => {
+    if (queue.isEmpty()) process.nextTick(() => processMessage());
+    queue.enqueue(message);
   });
 }
