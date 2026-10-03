@@ -7,6 +7,7 @@ import qrcode from 'qrcode-terminal';
 async function main() {
   const { state, saveCreds } = await useMultiFileAuthState('auth_info_baileys');
   const channel = new WhatsAppChannel({ auth: state, saveCreds });
+  await channel.connect();
 
   channel
     .on('connection.qrcode', (qr) => {
@@ -18,15 +19,7 @@ async function main() {
     })
     .on('connection.closed', (statusCode) => {
       console.log('connection closed: ', statusCode);
-    })
-    .on('messaging-history.set', (event) => {
-      console.log('messages length: ', event.messages.length);
-      for (const msg of event.messages) {
-        console.log(JSON.stringify(msg, null, 2));
-      }
     });
-
-  await channel.connect();
 }
 
 main();
