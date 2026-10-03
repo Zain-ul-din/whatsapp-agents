@@ -1,27 +1,26 @@
 {
-    "compilerOptions": {
-      "target": "es6",
-      "module": "commonjs",
-      "esModuleInterop": true,
-      "sourceMap": true,
-      "outDir": "dist",
-      "strict": true,
-      "moduleResolution": "node",
-      "resolveJsonModule": true,
-      "declaration": true,
-      "rootDir": "src",
-      "forceConsistentCasingInFileNames": true,
-      "noImplicitReturns": true,
-      "noImplicitThis": true,
-      "noImplicitAny": true,
-      "strictNullChecks": true,
-      "noUnusedLocals": false,
-      "noUnusedParameters": true,
-      "lib": ["es6", "dom"],
-      "types": ["node"],
-      "allowJs": false
-    },
-    "include": ["src/**/*"],
-    "exclude": ["node_modules", "**/*.test.ts"]
+  "compilerOptions": {
+    "target": "es6",
+    "module": "nodenext",
+    "esModuleInterop": true,
+    "sourceMap": true,
+    "outDir": "dist",
+    "strict": true,
+    "moduleResolution": "nodenext",
+    "resolveJsonModule": true,
+    "declaration": true,
+    "rootDir": "src",
+    "forceConsistentCasingInFileNames": true,
+    "noImplicitReturns": true,
+    "noImplicitThis": true,
+    "noImplicitAny": true,
+    "strictNullChecks": true,
+    "noUnusedLocals": false,
+    "noUnusedParameters": true,
+    "lib": ["es6", "dom"],
+    "types": ["node"],
+    "allowJs": false
+  },
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "**/*.test.ts"]
 }
-  

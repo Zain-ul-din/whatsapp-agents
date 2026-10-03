@@ -1,5 +1,7 @@
+import 'dotenv/config';
 import { useMultiFileAuthState } from '@whiskeysockets/baileys';
 import { WhatsAppChannel } from './channel/whatsapp-channel';
+import { agentsOrchestration } from './agents/agents-orchestration';
 import qrcode from 'qrcode-terminal';
 
 async function main() {
@@ -12,10 +14,19 @@ async function main() {
     })
     .on('connection.succeeded', () => {
       console.log('connected');
+      agentsOrchestration(channel);
     })
     .on('connection.closed', (statusCode) => {
       console.log('connection closed: ', statusCode);
+    })
+    .on('messaging-history.set', (event) => {
+      console.log('messages length: ', event.messages.length);
+      for (const msg of event.messages) {
+        console.log(JSON.stringify(msg, null, 2));
+      }
     });
+
+  await channel.connect();
 }
 
 main();
