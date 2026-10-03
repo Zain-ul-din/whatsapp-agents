@@ -9,7 +9,7 @@
     "moduleResolution": "nodenext",
     "resolveJsonModule": true,
     "declaration": true,
-    "rootDir": "src",
+    "rootDir": ".",
     "forceConsistentCasingInFileNames": true,
     "noImplicitReturns": true,
     "noImplicitThis": true,
@@ -21,6 +21,6 @@
     "types": ["node"],
     "allowJs": false
   },
-  "include": ["src/**/*"],
-  "exclude": ["node_modules", "**/*.test.ts"]
+  "include": ["src/**/*", "tests/**/*"],
+  "exclude": ["node_modules"]
 }

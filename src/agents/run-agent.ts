@@ -1,4 +1,4 @@
-import { streamText } from 'ai';
+import { stepCountIs, streamText } from 'ai';
 import { openai } from './providers/openai-subscription';
 import { tools } from './tools/tools';
 
@@ -12,7 +12,8 @@ export async function runAgent(prompt: string) {
         instructions: 'You are a WhatsApp helpful assistant.'
       }
     },
-    tools: tools
+    tools: tools,
+    stopWhen: stepCountIs(5)
   });
 
   let text = '';

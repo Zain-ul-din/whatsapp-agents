@@ -8,6 +8,7 @@
     "start": "npx yarn && npx yarn dev",
     "format": "prettier --write ./src",
     "test": "vite-node ./test/index.test.ts",
+    "test:harness": "vite-node ./tests/harness.test.ts",
     "test:baileys": "vite-node ./baileys/index.ts",
     "build": "npx yarn"
   },
