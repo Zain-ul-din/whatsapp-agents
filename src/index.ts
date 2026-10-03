@@ -1,11 +1,21 @@
-// import { WhatsAppClient } from './lib/WhatsAppClient';
-// import welcomeUser from './services/welcomeUser';
+import { useMultiFileAuthState } from '@whiskeysockets/baileys';
+import { WhatsAppChannel } from './channel/whatsapp-channel';
+import qrcode from 'qrcode-terminal';
 
-// console.log('🤖 starting client...');
-// const whatsappClient = new WhatsAppClient();
-// whatsappClient.initializeClient();
+async function main() {
+  const { state, saveCreds } = await useMultiFileAuthState('auth_info_baileys');
+  const channel = new WhatsAppChannel({ auth: state, saveCreds });
 
-// whatsappClient.messageEvent.on('self', welcomeUser);
+  channel
+    .on('connection.qrcode', (qr) => {
+      qrcode.generate(qr, { small: true });
+    })
+    .on('connection.succeeded', () => {
+      console.log('connected');
+    })
+    .on('connection.closed', (statusCode) => {
+      console.log('connection closed: ', statusCode);
+    });
+}
 
-import { connectToWhatsApp } from './baileys';
-connectToWhatsApp();
+main();

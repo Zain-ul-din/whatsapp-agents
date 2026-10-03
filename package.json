@@ -21,9 +21,9 @@
   },
   "dependencies": {
     "@google/generative-ai": "^0.17.1",
+    "@hapi/boom": "^10.0.1",
     "@types/qrcode-terminal": "^0.12.0",
-    "@whiskeysockets/baileys": "^6.7.7",
-    "@whiskeysockets/libsignal-node": "github:WhiskeySockets/libsignal-node",
+    "@whiskeysockets/baileys": "7.0.0-rc14",
     "axios": "^1.7.9",
     "dotenv": "^16.0.3",
     "form-data": "^4.0.1",
