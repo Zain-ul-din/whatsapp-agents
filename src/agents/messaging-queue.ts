@@ -8,11 +8,7 @@ export class MessagingQueue {
   }
 
   enqueue(message: ChannelMessage) {
-    const existingIdx = this.messages.findIndex((m) => {
-      return m.senderId === message.senderId;
-    });
-    if (existingIdx !== -1) this.messages[existingIdx] = message;
-    else this.messages.push(message);
+    this.messages.push(message);
   }
 
   dequeue() {
