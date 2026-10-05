@@ -9,19 +9,54 @@ db.exec(`
     jid TEXT NOT NULL,
     id TEXT NOT NULL,
     data TEXT NOT NULL,
+    created_at INTEGER NOT NULL DEFAULT 0,
+    updated_at INTEGER NOT NULL DEFAULT 0,
     PRIMARY KEY (jid, id)
   )
 `);
 
-const insertMsg = db.prepare('INSERT OR REPLACE INTO messages (jid, id, data) VALUES (?, ?, ?)');
+const columns = db.pragma('table_info(messages)') as { name: string }[];
+for (const column of ['created_at', 'updated_at']) {
+  if (!columns.some((c) => c.name === column)) {
+    db.exec(`ALTER TABLE messages ADD COLUMN ${column} INTEGER NOT NULL DEFAULT 0`);
+  }
+}
+
+function messageTime(msg: proto.IWebMessageInfo): number {
+  const value = Number(msg.messageTimestamp?.toString());
+  return Number.isFinite(value) && value > 0 ? value : 0;
+}
+
+const legacyRows = db.prepare('SELECT jid, id, data FROM messages WHERE created_at = 0').all() as {
+  jid: string;
+  id: string;
+  data: string;
+}[];
+const backfill = db.prepare(
+  'UPDATE messages SET created_at = ?, updated_at = ? WHERE jid = ? AND id = ?'
+);
+db.transaction(() => {
+  for (const row of legacyRows) {
+    const timestamp = messageTime(JSON.parse(row.data) as proto.IWebMessageInfo);
+    backfill.run(timestamp, Math.floor(Date.now() / 1000), row.jid, row.id);
+  }
+})();
+
+const insertMsg = db.prepare(`
+  INSERT INTO messages (jid, id, data, created_at, updated_at) VALUES (?, ?, ?, ?, ?)
+  ON CONFLICT(jid, id) DO UPDATE SET data = excluded.data, updated_at = excluded.updated_at
+`);
 const getMsg = db.prepare('SELECT data FROM messages WHERE jid = ? AND id = ?');
 
 const listMessages = db.prepare(`
   SELECT * FROM messages
-  WHERE jid = ?
-  ORDER BY rowid DESC
+  WHERE jid = ? AND (created_at < ? OR (created_at = ? AND id < ?))
+  ORDER BY created_at DESC, id DESC
   LIMIT ?
 `);
+db.exec(
+  'CREATE INDEX IF NOT EXISTS messages_jid_created_id ON messages(jid, created_at DESC, id DESC)'
+);
 
 db.exec(`
   CREATE TABLE IF NOT EXISTS processed_messages (
@@ -45,11 +80,17 @@ export function getMessage(key: WAMessageKey): proto.IWebMessageInfo | undefined
   return row ? (JSON.parse(row.data) as proto.IWebMessageInfo) : undefined;
 }
 
-export function loadMessages(jid: string, count: number) {
-  const rows = listMessages.all(jid, count) as {
+export function loadMessages(
+  jid: string,
+  before: { createdAt: number; id: string },
+  count: number
+) {
+  const rows = listMessages.all(jid, before.createdAt, before.createdAt, before.id, count) as {
     data: string;
     jid: string;
     id: string;
+    created_at: number;
+    updated_at: number;
   }[];
   return rows
     .map((r) => {
@@ -62,7 +103,13 @@ export function loadMessages(jid: string, count: number) {
 function saveMessage(msg: proto.IWebMessageInfo) {
   if (!msg || !msg.key) return;
   if (msg.key.remoteJid && msg.key.id && msg.message) {
-    insertMsg.run(msg.key.remoteJid, msg.key.id, JSON.stringify(msg));
+    insertMsg.run(
+      msg.key.remoteJid,
+      msg.key.id,
+      JSON.stringify(msg),
+      messageTime(msg),
+      Math.floor(Date.now() / 1000)
+    );
   }
 }
 

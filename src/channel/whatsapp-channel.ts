@@ -8,7 +8,7 @@ import {
 import { Boom } from '@hapi/boom';
 import { Channel } from './channel';
 import { EventEmitter } from 'node:events';
-import { ChannelMessage } from './types/channel-message';
+import { ChannelMessage, ContextMessage } from './types/channel-message';
 import { ChannelName } from './types/channel-name';
 import { ChannelRespondPayload } from './types/channel-respond-payload';
 import { claimMessage, loadMessages, usePersistMessages } from './persistence/baileys-store';
@@ -32,6 +32,9 @@ export class WhatsAppChannel extends Channel<WhatsAppChannelOptions, EventMap> {
   private ev: EventEmitter<CustomEventMap>;
   private socketListeners: Array<(socket: ReturnType<typeof makeWASocket>) => void> = [];
   private connected = false;
+  private buffers = new Map<string, ChannelMessage[]>();
+  private timers = new Map<string, NodeJS.Timeout>();
+  private static throttleDelay: number = 2_000;
 
   private readonly ignoreJIDs = ['@g.us', '@broadcast', '@newsletter'];
 
@@ -68,27 +71,90 @@ export class WhatsAppChannel extends Channel<WhatsAppChannelOptions, EventMap> {
     return this;
   }
 
-  override onMessage(callback: (msg: ChannelMessage) => void): this {
-    const deliver = (m: WAMessage) => {
-      if (m.key.fromMe) return;
-      const text = m.message?.conversation ?? m.message?.extendedTextMessage?.text;
-      if (!text || !m.key.remoteJid || !m.key.id) return;
-      if (this.ignoreJIDs.some((id) => m.key.remoteJid?.endsWith(id))) return;
-      if (!claimMessage(m)) return;
-      callback({
-        id: m.key.id,
-        content: text,
-        senderId: m.key.remoteJid,
-        channel: 'WhatsAppBaileys',
-        waMsg: m
-      });
+  override onMessage(
+    callback: (messages: ContextMessage[], replyTo: ChannelMessage) => void
+  ): this {
+    const filterMessages = (msgs: WAMessage[]) => {
+      const filteredMessages: ChannelMessage[] = [];
+      for (const m of msgs) {
+        if (m.key.fromMe) continue;
+        const text = m.message?.conversation ?? m.message?.extendedTextMessage?.text;
+        if (!text || !m.key.remoteJid || !m.key.id) continue;
+        if (this.ignoreJIDs.some((id) => m.key.remoteJid?.endsWith(id))) continue;
+        if (!claimMessage(m)) continue;
+        filteredMessages.push({
+          id: m.key.id,
+          content: text,
+          senderId: m.key.remoteJid,
+          channel: 'WhatsAppBaileys',
+          waMsg: m
+        });
+      }
+      return filteredMessages;
     };
+
+    const handleNewMessages = (messages: WAMessage[]) => {
+      for (const message of filterMessages(messages)) {
+        const jid = message.senderId;
+        const buffer = this.buffers.get(jid) ?? [];
+        buffer.push(message);
+        const timer = this.timers.get(jid);
+        this.buffers.set(jid, buffer);
+        if (timer) clearTimeout(timer);
+
+        const timeout = setTimeout(() => {
+          this.timers.delete(jid);
+          this.buffers.delete(jid);
+
+          const ordered = buffer.sort((a, b) => {
+            const aTime =
+              Number(a.channel === 'WhatsAppBaileys' && a.waMsg?.messageTimestamp?.toString()) || 0;
+            const bTime =
+              Number(b.channel === 'WhatsAppBaileys' && b.waMsg?.messageTimestamp?.toString()) || 0;
+            return aTime - bTime || a.id.localeCompare(b.id);
+          });
+
+          const first = ordered[0];
+          const timestamp =
+            Number(
+              first.channel === 'WhatsAppBaileys' && first.waMsg?.messageTimestamp?.toString()
+            ) || 0;
+          const bufferedIds = new Set(ordered.map((m) => m.id));
+          const history: ContextMessage[] = loadMessages(
+            jid,
+            { createdAt: timestamp, id: first.id },
+            100
+          )
+            .filter((m) => !bufferedIds.has(m.id))
+            .flatMap((m): ContextMessage[] => {
+              const text =
+                m.data.message?.conversation ?? m.data.message?.extendedTextMessage?.text;
+              return text
+                ? [
+                    {
+                      id: m.id,
+                      senderId: jid,
+                      channel: 'WhatsAppBaileys',
+                      content: text,
+                      role: m.data.key?.fromMe ? 'assistant' : 'user'
+                    }
+                  ]
+                : [];
+            });
+          callback(
+            [...history, ...ordered.map((m): ContextMessage => ({ ...m, role: 'user' }))],
+            ordered[ordered.length - 1]
+          );
+        }, WhatsAppChannel.throttleDelay);
+
+        this.timers.set(jid, timeout);
+      }
+    };
+
     this.on('messages.upsert', (event) => {
-      for (const m of event.messages) deliver(m);
+      if (event.type === 'notify') handleNewMessages(event.messages);
     });
-    this.on('messaging-history.set', (event) => {
-      for (const m of event.messages) deliver(m);
-    });
+
     return this;
   }
 
@@ -103,29 +169,31 @@ export class WhatsAppChannel extends Channel<WhatsAppChannelOptions, EventMap> {
     return this;
   }
 
-  override getMessages(senderId: string) {
-    const dbMessages = loadMessages(senderId, 100);
-    const channelMessages: (ChannelMessage & {
-      role: 'user' | 'assistant';
-    })[] = [];
+  // override getMessages(senderId: string) {
+  //   const dbMessages = loadMessages(senderId, 100);
+  //   const channelMessages: (ChannelMessage & {
+  //     role: 'user' | 'assistant';
+  //   })[] = [];
 
-    for (const m of dbMessages) {
-      if (!m.data.message) continue;
-      const text = m.data.message.conversation ?? m.data.message.extendedTextMessage?.text;
-      if (this.ignoreJIDs.find((id) => m.jid.endsWith(id))) continue;
-      if (!text) continue;
+  //   this.socket.fetchMessageHistory(50,  { id: "",   remoteJid: "" }, 0);
 
-      channelMessages.push({
-        id: m.id,
-        senderId: m.jid,
-        channel: 'WhatsAppBaileys',
-        content: text,
-        role: m.data.key?.fromMe ? 'assistant' : 'user'
-      });
-    }
+  //   for (const m of dbMessages) {
+  //     if (!m.data.message) continue;
+  //     const text = m.data.message.conversation ?? m.data.message.extendedTextMessage?.text;
+  //     if (this.ignoreJIDs.find((id) => m.jid.endsWith(id))) continue;
+  //     if (!text) continue;
 
-    return channelMessages;
-  }
+  //     channelMessages.push({
+  //       id: m.id,
+  //       senderId: m.jid,
+  //       channel: 'WhatsAppBaileys',
+  //       content: text,
+  //       role: m.data.key?.fromMe ? 'assistant' : 'user'
+  //     });
+  //   }
+
+  //   return channelMessages;
+  // }
 
   async connect(): Promise<this> {
     if (this.connected) return this;

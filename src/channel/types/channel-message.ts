@@ -16,3 +16,5 @@ export type ChannelMessage =
   | (ChannelBase & {
       channel: 'WhatsAppOfficial';
     });
+
+export type ContextMessage = ChannelMessage & { role: 'user' | 'assistant' };

@@ -1,13 +1,13 @@
 import { ChannelMessage } from '../channel/types/channel-message';
 
-export class MessagingQueue {
-  messages: ChannelMessage[];
+export class MessagingQueue<T = ChannelMessage> {
+  messages: T[];
 
   constructor() {
     this.messages = [];
   }
 
-  enqueue(message: ChannelMessage) {
+  enqueue(message: T) {
     this.messages.push(message);
   }
 
