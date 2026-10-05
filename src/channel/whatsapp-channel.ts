@@ -119,6 +119,7 @@ export class WhatsAppChannel extends Channel<WhatsAppChannelOptions, EventMap> {
             Number(
               first.channel === 'WhatsAppBaileys' && first.waMsg?.messageTimestamp?.toString()
             ) || 0;
+
           const bufferedIds = new Set(ordered.map((m) => m.id));
           const history: ContextMessage[] = loadMessages(
             jid,
@@ -141,6 +142,7 @@ export class WhatsAppChannel extends Channel<WhatsAppChannelOptions, EventMap> {
                   ]
                 : [];
             });
+
           callback(
             [...history, ...ordered.map((m): ContextMessage => ({ ...m, role: 'user' }))],
             ordered[ordered.length - 1]
@@ -168,32 +170,6 @@ export class WhatsAppChannel extends Channel<WhatsAppChannelOptions, EventMap> {
     );
     return this;
   }
-
-  // override getMessages(senderId: string) {
-  //   const dbMessages = loadMessages(senderId, 100);
-  //   const channelMessages: (ChannelMessage & {
-  //     role: 'user' | 'assistant';
-  //   })[] = [];
-
-  //   this.socket.fetchMessageHistory(50,  { id: "",   remoteJid: "" }, 0);
-
-  //   for (const m of dbMessages) {
-  //     if (!m.data.message) continue;
-  //     const text = m.data.message.conversation ?? m.data.message.extendedTextMessage?.text;
-  //     if (this.ignoreJIDs.find((id) => m.jid.endsWith(id))) continue;
-  //     if (!text) continue;
-
-  //     channelMessages.push({
-  //       id: m.id,
-  //       senderId: m.jid,
-  //       channel: 'WhatsAppBaileys',
-  //       content: text,
-  //       role: m.data.key?.fromMe ? 'assistant' : 'user'
-  //     });
-  //   }
-
-  //   return channelMessages;
-  // }
 
   async connect(): Promise<this> {
     if (this.connected) return this;
