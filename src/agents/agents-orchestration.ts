@@ -19,24 +19,29 @@ export function agentsOrchestration(channel: Channel) {
 
         const { messages, replyTo } = pending;
 
-        const response = await runAgent(
-          messages.map((msg) => {
-            return {
-              role: msg.role,
-              content: msg.content
-            };
-          })
-        );
+        try {
+          const response = await runAgent(
+            messages.map((msg) => {
+              return {
+                role: msg.role,
+                content: msg.content
+              };
+            })
+          );
 
-        if (replyTo.channel == 'WhatsAppBaileys') {
-          await channel.respond({
-            recipientId: replyTo.senderId,
-            content: response,
-            baileysMsg: replyTo.waMsg
-          });
+          if (replyTo.channel == 'WhatsAppBaileys') {
+            await channel.respond({
+              recipientId: replyTo.senderId,
+              content: response,
+              baileysMsg: replyTo.waMsg
+            });
+          }
+        } catch (err) {
+          console.error('agent failed to process message:', err);
+        } finally {
+          // Always move past this item so one failure can't block the queue
+          queue.dequeue();
         }
-
-        queue.dequeue();
       }
     } finally {
       processing = false;
