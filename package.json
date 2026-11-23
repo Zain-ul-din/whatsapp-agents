@@ -27,7 +27,7 @@
     "exa-js": "^2.25.0",
     "libphonenumber-js": "^1.13.17",
     "qrcode-terminal": "^0.12.0",
-    "zod": "^4.6.5"
+    "zod": "^4.6.6"
   },
   "devDependencies": {
     "@types/better-sqlite3": "^9.6.0",
