@@ -1,48 +1,44 @@
 {
   "name": "whatsapp-agents",
   "version": "1.0.0",
-  "main": "index.js",
+  "private": true,
   "license": "MIT",
+  "packageManager": "pnpm@10.0.0",
+  "engines": {
+    "node": ">=20"
+  },
   "scripts": {
     "dev": "vite-node ./src/index.ts",
-    "start": "npx yarn && npx yarn dev",
-    "format": "prettier --write ./src",
-    "test": "vite-node ./test/index.test.ts",
-    "test:harness": "vite-node ./tests/harness.test.ts",
-    "test:baileys": "vite-node ./baileys/index.ts",
-    "build": "npx yarn"
-  },
-  "devDependencies": {
-    "@types/better-sqlite3": "^9.6.0",
-    "@types/invariant": "^2.2.37",
-    "@types/node": "^18.14.0",
-    "@types/node-fetch": "^2.6.2",
-    "prettier": "^2.8.4",
-    "typescript": "^4.9.5",
-    "vite-node": "^0.28.5"
+    "start": "vite-node ./src/index.ts",
+    "typecheck": "tsc --noEmit",
+    "format": "prettier --write ./src ./tests",
+    "format:check": "prettier --check ./src ./tests",
+    "test:harness": "vite-node ./tests/harness.test.ts"
   },
   "dependencies": {
     "@ai-sdk/openai": "^4.0.83",
-    "@google/generative-ai": "^0.17.1",
     "@hapi/boom": "^10.0.1",
     "@toon-format/toon": "^4.1.1",
-    "@types/qrcode-terminal": "^0.12.0",
     "@whiskeysockets/baileys": "7.0.0-rc14",
     "ai": "^7.0.127",
-    "axios": "^1.7.9",
     "better-sqlite3": "^13.0.3",
     "dotenv": "^16.0.3",
     "exa-js": "^2.25.0",
-    "form-data": "^4.0.1",
-    "invariant": "^2.2.4",
-    "mongo-baileys": "^1.0.1",
-    "mongodb": "^6.8.0",
-    "ollama": "^0.5.12",
-    "openai": "^4.56.0",
-    "ora": "3.2.0",
     "qrcode-terminal": "^0.12.0",
-    "stability-client": "^1.8.0",
-    "whatsapp-ai-bot": "file:",
     "zod": "^4.6.5"
+  },
+  "devDependencies": {
+    "@types/better-sqlite3": "^9.6.0",
+    "@types/node": "^20.0.0",
+    "@types/qrcode-terminal": "^0.12.0",
+    "prettier": "^3.3.0",
+    "typescript": "^5.6.0",
+    "vite-node": "^3.0.0"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "better-sqlite3",
+      "esbuild"
+    ]
   }
 }
