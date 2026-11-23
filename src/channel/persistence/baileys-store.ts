@@ -1,7 +1,10 @@
 import makeWASocket, { proto, WAMessageKey } from '@whiskeysockets/baileys';
 import DataBase from 'better-sqlite3';
+import { mkdirSync } from 'node:fs';
 
-const path = `${process.cwd()}/stores/baileys.db`;
+const storesDir = `${process.cwd()}/stores`;
+mkdirSync(storesDir, { recursive: true });
+const path = `${storesDir}/baileys.db`;
 const db = new DataBase(path);
 
 db.exec(`

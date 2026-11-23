@@ -22,7 +22,7 @@ function loadMasterKey(): Buffer {
 }
 
 function createGuard(): PiiGuard {
-  if (!existsSync(storesDir)) mkdirSync(storesDir);
+  mkdirSync(storesDir, { recursive: true });
   const defaultCountry = (process.env.PII_DEFAULT_COUNTRY ?? 'PK') as CountryCode;
   const vault = new PiiVault({
     dbPath: `${storesDir}/pii-vault.db`,
