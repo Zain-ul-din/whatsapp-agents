@@ -28,6 +28,21 @@ WhatsApp Agents connects an AI agent to WhatsApp. Incoming messages are queued p
 - OpenAI models through a ChatGPT subscription
 - Web search tool powered by [Exa](https://exa.ai/)
 - Agent instructions loaded from `agents/instructions.md`
+- PII guard: personal data is swapped for placeholders before reaching the model (see [Privacy](#privacy))
+
+## Privacy
+
+The model never sees customers' personal data.
+
+```
+in:  "call me on 0300 1234567"  →  model sees "call me on [PHONE_1]"
+out: "we'll call [PHONE_1]"      →  customer sees "we'll call 0300 1234567"
+```
+
+- **Detection** runs in two layers. Pattern matching with checksum validation catches phone numbers (international), emails, CNICs, cards, IBANs, passwords and OTPs. An optional [GLiNER](https://github.com/urchade/GLiNER) service adds multilingual detection of names, addresses and IDs.
+- **Per-chat vault.** Each chat has its own placeholder map. Placeholders can only be restored in the chat that created them. Values are encrypted at rest (AES-256-GCM) and looked up by keyed hash.
+- **Tool guard.** Web search refuses queries that contain personal data or placeholders.
+- **Fail-safe.** If the detection service is down, pattern matching still runs.
 
 ## Demo
 
@@ -64,6 +79,8 @@ Copy `.env.example` to `.env` and fill in the credentials. Then write your agent
 ```bash
 pnpm start
 ```
+
+Or run the bot together with the PII detection service: `docker compose up -d --build` (see [Deployment](docs/deployment.md)).
 
 Scan the QR code with WhatsApp (Linked devices → Link a device).
 
