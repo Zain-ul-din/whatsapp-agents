@@ -1,0 +1,29 @@
+services:
+  bot:
+    build: .
+    env_file: .env
+    environment:
+      PII_DETECTOR_URL: http://pii-detector:8000
+    volumes:
+      - ./auth_info_baileys:/usr/src/app/auth_info_baileys
+      - ./stores:/usr/src/app/stores
+      - ./agents:/usr/src/app/agents
+    depends_on:
+      pii-detector:
+        condition: service_healthy
+    stdin_open: true
+    tty: true
+
+  pii-detector:
+    build: ./services/pii-detector
+    healthcheck:
+      test:
+        [
+          'CMD',
+          'python',
+          '-c',
+          "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')"
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 12
