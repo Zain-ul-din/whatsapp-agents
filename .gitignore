@@ -24,6 +24,7 @@ yarn.lock
 
 .vscode
 
-/stores/*.db
+/stores/*.db*
+/stores/*.key
 
 /agents

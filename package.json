@@ -13,7 +13,8 @@
     "typecheck": "tsc --noEmit",
     "format": "prettier --write ./src ./tests",
     "format:check": "prettier --check ./src ./tests",
-    "test:harness": "vite-node ./tests/harness.test.ts"
+    "test:harness": "vite-node ./tests/harness.ts",
+    "test": "vitest run"
   },
   "dependencies": {
     "@ai-sdk/openai": "^4.0.83",
@@ -24,6 +25,7 @@
     "better-sqlite3": "^13.0.3",
     "dotenv": "^16.0.3",
     "exa-js": "^2.25.0",
+    "libphonenumber-js": "^1.13.17",
     "qrcode-terminal": "^0.12.0",
     "zod": "^4.6.5"
   },
@@ -33,7 +35,8 @@
     "@types/qrcode-terminal": "^0.12.0",
     "prettier": "^3.3.0",
     "typescript": "^5.6.0",
-    "vite-node": "^3.0.0"
+    "vite-node": "^3.0.0",
+    "vitest": "^3"
   },
   "pnpm": {
     "onlyBuiltDependencies": [
