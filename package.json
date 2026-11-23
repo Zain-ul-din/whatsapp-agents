@@ -36,7 +36,7 @@
     "prettier": "^3.3.0",
     "typescript": "^5.6.0",
     "vite-node": "^3.0.0",
-    "vitest": "^3"
+    "vitest": "^4"
   },
   "pnpm": {
     "onlyBuiltDependencies": [
