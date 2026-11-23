@@ -13,6 +13,7 @@ WhatsApp Agents connects an AI agent to WhatsApp. Incoming messages are queued p
 # Table of Content
 
 - [Features](#features)
+- [Demo](#demo)
 - [Usage](#usage)
 - [Deployment](docs/deployment.md)
 - [Disclaimer](#disclaimer)
@@ -27,6 +28,22 @@ WhatsApp Agents connects an AI agent to WhatsApp. Incoming messages are queued p
 - OpenAI models through a ChatGPT subscription
 - Web search tool powered by [Exa](https://exa.ai/)
 - Agent instructions loaded from `agents/instructions.md`
+
+## Demo
+
+### Gemini
+
+[![Screenshot (1186)](https://github.com/Zain-ul-din/whatsapp-ai-bot/assets/78583049/b6f256de-c792-4947-bf65-401a60a0b1f4)](https://www.youtube.com/watch?v=dXDxTQQqeq8)
+
+### Stability AI + Chat-GPT
+
+![image](https://user-images.githubusercontent.com/78583049/222071673-ef0f2021-a8b4-4263-9304-a77ecd76c0a1.png)
+
+### Dalle + Custom Model
+
+![image](https://user-images.githubusercontent.com/78583049/222074174-55792d13-5137-4c1c-b708-3ad188ca8d8d.png)
+
+---
 
 ## Usage
 
@@ -71,9 +88,13 @@ This bot utilizes [baileys](https://github.com/WhiskeySockets/Baileys) to operat
 
 A big thank you to these people for supporting this project.
 
-| ![Levitco](https://avatars.githubusercontent.com/u/47256157?v=4&s=128) | ![Anas Ashfaq](https://avatars.githubusercontent.com/u/119153707?v=4&s=128) | <img src="https://avatars.githubusercontent.com/u/0?v=4" width="150" height="150"/> |
-| ---------------------------------------------------------------------- | --------------------------------------------------------------------------- | ----------------------------------------------------------------------------------- |
-| Levitco                                                                | Anas Ashfaq                                                                 | YOU?                                                                                |
+<table>
+  <tr>
+    <td align="center"><img src="https://avatars.githubusercontent.com/u/47256157?v=4&s=128" width="80" height="80" alt="Levitco"/><br/>Levitco</td>
+    <td align="center"><img src="https://avatars.githubusercontent.com/u/119153707?v=4&s=128" width="80" height="80" alt="Anas Ashfaq"/><br/>Anas Ashfaq</td>
+    <td align="center"><img src="https://avatars.githubusercontent.com/u/0?v=4" width="80" height="80" alt="You"/><br/>YOU?</td>
+  </tr>
+</table>
 
 # Useful links
 
