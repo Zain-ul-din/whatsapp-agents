@@ -8,102 +8,51 @@
 - Disclaimer: This project is under active development. Features and documentation may change; contributions to improve the docs are welcome.
 ```
 
-The WhatsApp AI Agents is a chatbot that uses AI models APIs to generate responses to user input. The bot supports several AI models, including **`Gemini`**, **`ChatGPT`**, **`Ollama`**, **`DALL-E`**, **`Flux`**, and **`Stability AI`**.
+WhatsApp Agents connects an AI agent to WhatsApp. Incoming messages are queued per conversation and answered by an agent that can use tools such as web search. The agent's behaviour is set by an editable instructions file, not by code.
 
 # Table of Content
 
-- [Demo](#demo)
+- [Features](#features)
 - [Usage](#usage)
-- [Tutorials](#Tutorials)
-- [Docs](docs/config-docs.md)
+- [Deployment](docs/deployment.md)
 - [Disclaimer](#disclaimer)
 - [Contributors](#contributors)
-- [Sponsors](#Sponsors)
+- [Sponsors](#sponsors)
 - [About](#about-us)
 
-## Supported Models
+## Features
 
-| Model         | Provider                                                                                          | Type          | Command    |
-| ------------- | ------------------------------------------------------------------------------------------------- | ------------- | ---------- |
-| ChatGPT       | [OpenAI](https://platform.openai.com/docs/guides/text-generation/quickstart)                      | Text to Text  | !chatgpt   |
-| Gemini        | [Google](https://ai.google.dev/gemini-api/docs/text-generation?lang=node#generate-text-from-text) | Text to Text  | !gemini    |
-| Gemini Vision | [Google](https://ai.google.dev/gemini-api/docs/vision?lang=node#upload-image)                     | Image to Text | none       |
-| Dalle 2 & 3   | [OpenAI](https://platform.openai.com/docs/api-reference/images/create)                            | Text to Image | !dalle     |
-| Flux          | [Hugging Face](https://huggingface.co/black-forest-labs/FLUX.1-dev)                               | Text to Image | !flux      |
-| Stability AI  | [Stability AI](https://platform.stability.ai/docs/getting-started/stable-image)                   | Text to Image | !stability |
-| Ollama        | [Open Source](https://ollama.com/)                                                                | Text to Text  | !ollama    |
-| Custom        | Base Provider                                                                                     | Text to Text  | !wa        |
-
-## Demo
-
-### Gemini
-
-[![Screenshot (1186)](https://github.com/Zain-ul-din/whatsapp-ai-bot/assets/78583049/b6f256de-c792-4947-bf65-401a60a0b1f4)](https://www.youtube.com/watch?v=dXDxTQQqeq8)
-
-### Stability AI + Chat-GPT
-
-![image](https://user-images.githubusercontent.com/78583049/222071673-ef0f2021-a8b4-4263-9304-a77ecd76c0a1.png)
-
-### Dalle + Custom Model
-
-![image](https://user-images.githubusercontent.com/78583049/222074174-55792d13-5137-4c1c-b708-3ad188ca8d8d.png)
-
----
+- WhatsApp connection via [Baileys](https://github.com/WhiskeySockets/Baileys), with QR login and persistent sessions
+- Messages are batched per conversation and answered with prior context
+- OpenAI models through a ChatGPT subscription
+- Web search tool powered by [Exa](https://exa.ai/)
+- Agent instructions loaded from `agents/instructions.md`
 
 ## Usage
 
-### 1. Download Source Code
+### 1. Get the code
 
 ```bash
- git clone https://github.com/Zain-ul-din/WhatsApp-Ai-bot.git
- cd WhatsApp-Ai-bot
+git clone https://github.com/Zain-ul-din/WhatsApp-Ai-bot.git
+cd WhatsApp-Ai-bot
+pnpm install
 ```
 
-> OR
+### 2. Configure
 
-- [Download Zip File](https://github.com/Zain-ul-din/WhatsApp-Ai-bot/archive/refs/heads/master.zip)
+Copy `.env.example` to `.env` and fill in the credentials. Then write your agent's instructions in `agents/instructions.md`. If the file is missing, a generic default is used.
 
-### 2. Get API Keys
+### 3. Run
 
-- [Gemini API Key](https://aistudio.google.com/app/apikey)
-- [OpenAI API Key](https://platform.openai.com/api-keys)
-- [Hugging Face API Key](https://huggingface.co/settings/tokens)
-- [Stability AI API Key](https://platform.stability.ai/account/keys)
+```bash
+pnpm start
+```
 
-### 3. Add API Keys
-
-Copy the file `.env.example` and rename it to `.env`, then set any settings you want to change.
-
-### 4. Run the code
-
-- Run `npm run start` to run the bot.
-
-- Scan QR code.
-
-## Default Settings
-
-- `!gemini` use gemini.
-- `!chatgpt` use chat-gpt.
-- `!dalle` use Dalle.
-- `!flux` use flux.
-- `!stability` use stability.
-
-**Note! open `src/whatsapp-ai.config.ts` to edit config.**
-
-[Docs Link](docs/config-docs.md)
-
-## Tutorials
-
-- **[Setup bot on cloud using Github code-spaces](https://www.youtube.com/watch?v=QahJSi6Ygj4)**
-- **[setup bot on a local machine](https://www.youtube.com/watch?v=fyPD3ILFPck)**
-
-### FQA
-
-- [How to create custom model](https://github.com/Zain-ul-din/whatsapp-ai-bot/issues/3)
+Scan the QR code with WhatsApp (Linked devices → Link a device).
 
 ## Disclaimer
 
-This bot utilizes [baileys](https://github.com/WhiskeySockets/Baileys) to operate an actual instance of Whatsapp Web to prevent blocking. However, it is essential to note that these operations come at a cost charged by OpenAI and Stability AI for every request made. Please be aware that WhatsApp does not support bots or unofficial clients on its platform, so using this method is not entirely secure and could lead to getting blocked.
+This bot utilizes [baileys](https://github.com/WhiskeySockets/Baileys) to operate an actual instance of Whatsapp Web to prevent blocking. However, it is essential to note that model and tool providers may charge for every request made. Please be aware that WhatsApp does not support bots or unofficial clients on its platform, so using this method is not entirely secure and could lead to getting blocked.
 
 ## Contributors
 
