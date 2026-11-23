@@ -4,10 +4,6 @@
 
 </div>
 
-```diff
-- Disclaimer: This project is under active development. Features and documentation may change; contributions to improve the docs are welcome.
-```
-
 WhatsApp Agents connects an AI agent to WhatsApp. Incoming messages are queued per conversation and answered by an agent that can use tools such as web search. The agent's behaviour is set by an editable instructions file, not by code.
 
 # Table of Content
