@@ -1,30 +1,29 @@
 # dependencies
 /node_modules
 
-# build folder
+# build output
 /dist
 
 # local env files
 .env
 .env*.local
 
-# local test
-/test
-
-/.wwebjs_cache
-
-# local session
-/session
-/auth_info_baileys
-
-# meta files
-
+# lockfiles from other package managers (this repo uses pnpm)
 package-lock.json
 yarn.lock
 
+# editor
 .vscode
 
-/stores/*.db*
-/stores/*.key
+# runtime data: WhatsApp session, message store, PII vault and its key
+/auth_info_baileys
+/stores/
 
+# agent instructions are deployment-specific
 /agents
+
+# python (services)
+__pycache__/
+*.py[cod]
+.venv/
+.mypy_cache/
